@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Produce Packing Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    input {
+      margin: 5px;
+    }
+    .item {
+      margin-bottom: 10px;
+    }
+    .results {
+      margin-top: 20px;
+      background: #f0f0f0;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Produce Packing Calculator</h1>
+
+  <label for="clients">Number of Clients:</label>
+  <input type="number" id="clients" min="1" required>
+  <button onclick="addItem()">Add Produce Item</button>
+
+  <div id="items"></div>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    let itemCount = 0;
+
+    function addItem() {
+      itemCount++;
+      const container = document.createElement("div");
+      container.className = "item";
+      container.innerHTML = `
+        <label>Item Name: <input type="text" id="name-${itemCount}" required></label>
+        <label>Servings per Box: <input type="number" id="servings-${itemCount}" min="1" required></label>
+      `;
+      document.getElementById("items").appendChild(container);
+    }
+
+    function calculate() {
+      const clients = parseInt(document.getElementById("clients").value);
+      if (!clients || clients < 1) {
+        alert("Please enter a valid number of clients.");
+        return;
+      }
+
+      let resultsHTML = "<h3>Pack the following amounts:</h3><ul>";
+
+      for (let i = 1; i <= itemCount; i++) {
+        const name = document.getElementById(`name-${i}`).value;
+        const servings = parseInt(document.getElementById(`servings-${i}`).value);
+
+        if (!name || !servings || servings < 1) continue;
+
+        const boxes = Math.ceil(clients / servings);
+        resultsHTML += `<li>${name}: <strong>${boxes}</strong> box(es)/sack(s)</li>`;
+      }
+
+      resultsHTML += "</ul>";
+      document.getElementById("results").innerHTML = resultsHTML;
+    }
+  </script>
+</body>
+</html>

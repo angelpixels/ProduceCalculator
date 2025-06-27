@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Produce Packing Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"] {
+      margin: 5px;
+      padding: 5px;
+      width: 200px;
+    }
+    .item {
+      margin-bottom: 10px;
+    }
+    .results {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 10px;
+    }
+    label {
+      display: inline-block;
+      min-width: 150px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Produce Packing Calculator</h1>
+
+  <label for="siteName">Site Name:</label>
+  <input type="text" id="siteName" placeholder="e.g. Plummer Park"><br><br>
+
+  <label for="eventDate">Date:</label>
+  <input type="date" id="eventDate"><br><br>
+
+  <label for="clients">Number of Clients:</label>
+  <input type="number" id="clients" min="1" required><br><br>
+
+  <div id="items"></div>
+
+  <button onclick="addItem()">Add Produce Item</button>
+  <button onclick="calculate()">Calculate</button>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    let itemCount = 0;
+
+    function createItemRow() {
+      itemCount++;
+      const container = document.createElement("div");
+      container.className = "item";
+      container.innerHTML = `
+        <label>Item Name:</label> <input type="text" id="name-${itemCount}" required>
+        <label>Servings per Box:</label> <input type="number" id="servings-${itemCount}" min="1" required>
+      `;
+      document.getElementById("items").appendChild(container);
+    }
+
+    function addItem() {
+      createItemRow();
+    }
+
+    function calculate() {
+      const siteName = document.getElementById("siteName").value.trim();
+      const eventDate = document.getElementById("eventDate").value;
+      const clients = parseInt(document.getElementById("clients").value);
+
+      if (!clients || clients < 1) {
+        alert("Please enter a valid number of clients.");
+        return;
+      }
+
+      let resultsHTML = `<h3>Packing List${siteName ? ` for ${siteName}` : ""}${eventDate ? ` on ${eventDate}` : ""}</h3><ul>`;
+
+      for (let i = 1; i <= itemCount; i++) {
+        const nameInput = document.getElementById(`name-${i}`);
+        const servingsInput = document.getElementById(`servings-${i}`);
+        if (!nameInput || !servingsInput) continue;
+
+        const name = nameInput.value.trim();
+        const servings = parseInt(servingsInput.value);
+
+        if (!name || !servings || servings < 1) continue;
+
+        const boxes = Math.ceil(clients / servings);
+        resultsHTML += `<li>${name}: <strong>${boxes}</strong> box(es)/sack(s)</li>`;
+      }
+
+      resultsHTML += "</ul>";
+      document.getElementById("results").innerHTML = resultsHTML;
+    }
+
+    // Create 5 initial rows and set today's date on load
+    window.onload = () => {
+      for (let i = 0; i < 5; i++) {
+        createItemRow();
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("eventDate").value = today;
+    };
+  </script>
+</body>
+</html>
